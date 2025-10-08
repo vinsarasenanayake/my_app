@@ -1,0 +1,49 @@
+name: my_app
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/logo.png
+    - assets/heroimagelogin.jpg
+    - assets/heroimageregister.jpg
+    - assets/heroimageaboutus.jpg
+    - assets/heroimagepurchase.jpg
+    - assets/bgimage.jpg
+    - assets/heroimagehome.jpg
+    - assets/testimonial1.jpg
+    - assets/testimonial2.jpg
+    - assets/testimonial3.jpg
+    - assets/teammember1.jpg
+    - assets/teammember2.jpg
+    - assets/teammember3.jpg
+    - assets/teammember4.jpg
+    - assets/product1.jpg
+    - assets/product2.jpg
+    - assets/product3.jpg
+    - assets/product4.jpg
+    - assets/product5.jpg
+    - assets/product6.jpg
+    - assets/product7.jpg
+    - assets/product8.jpg
+    - assets/product9.jpg
+    - assets/product10.jpg
+    - assets/product11.jpg
+    - assets/product12.jpg

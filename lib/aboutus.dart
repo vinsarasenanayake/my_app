@@ -11,7 +11,45 @@ class AboutUsScreen extends StatefulWidget {
   State<AboutUsScreen> createState() => _AboutUsScreenState();
 }
 
-class _AboutUsScreenState extends State<AboutUsScreen> {
+class _AboutUsScreenState extends State<AboutUsScreen> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _navigateToHome() {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+  }
+
+  Widget _buildPlaceholderLogo() {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: const Color(0xFF333333),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +83,63 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           ),
         ],
       ),
-      drawer: _buildDrawer(),
+
+      // Drawer with hamburger menu
+      drawer: Drawer(
+        backgroundColor: const Color(0xFF212121),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(color: Color(0xFF121212)),
+              child: GestureDetector(
+                onTap: _navigateToHome,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Image.asset(
+                      'assets/logo.png',
+                      width: 60,
+                      height: 60,
+                      errorBuilder: (context, error, stackTrace) => _buildPlaceholderLogo(),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Wild TRACE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            _buildDrawerItem(Icons.home, 'HOME', () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+            }),
+            _buildDrawerItem(Icons.landscape, 'JOURNEY', () {
+              Navigator.pop(context);
+            }),
+            _buildDrawerItem(Icons.shopping_bag, 'PURCHASE', () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const PurchaseScreen()));
+            }),
+            const Divider(color: Color(0xFF4b4b4b)),
+            _buildDrawerItem(Icons.shopping_cart, 'CART', () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const CartScreen()));
+            }),
+            _buildDrawerItem(Icons.login, 'LOGIN', () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+            }),
+          ],
+        ),
+      ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -58,79 +152,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     );
   }
 
-  void _navigateToHome() {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-  }
-
-  Widget _buildPlaceholderLogo() {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: const Color(0xFF333333),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: const Icon(Icons.camera_alt, color: Colors.white, size: 20),
-    );
-  }
-
-  Widget _buildDrawer() {
-    return Drawer(
-      backgroundColor: const Color(0xFF212121),
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(color: Color(0xFF121212)),
-            child: GestureDetector(
-              onTap: _navigateToHome,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Image.asset(
-                    'assets/logo.png',
-                    width: 60,
-                    height: 60,
-                    errorBuilder: (context, error, stackTrace) => _buildPlaceholderLogo(),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Wild TRACE',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          _buildDrawerItem(Icons.home, 'HOME', () {
-            Navigator.pop(context);
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-          }),
-          _buildDrawerItem(Icons.landscape, 'JOURNEY', () {
-            Navigator.pop(context);
-          }),
-          _buildDrawerItem(Icons.shopping_bag, 'PURCHASE', () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const PurchaseScreen()));
-          }),
-          const Divider(color: Color(0xFF4b4b4b)),
-          _buildDrawerItem(Icons.shopping_cart, 'CART', () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const CartScreen()));
-          }),
-          _buildDrawerItem(Icons.login, 'LOGIN', () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
-          }),
-        ],
-      ),
-    );
-  }
-
+  // Drawer item widget
   Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: Colors.white),
@@ -139,47 +161,51 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     );
   }
 
+  // Hero section with fade animation
   Widget _buildHeroSection() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.65,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/heroimageaboutus.jpg'),
-          fit: BoxFit.cover,
-        ),
-      ),
+    return FadeTransition(
+      opacity: _fadeAnimation,
       child: Container(
-        color: Colors.black.withOpacity(0.4),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text(
-                  'Our Journey Into the Wild',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: 1.2,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32.0),
-                  child: Text(
-                    '"Bringing the wild to your walls, each shot tells nature\'s untamed story."',
+        height: MediaQuery.of(context).size.height * 0.65,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/heroimageaboutus.jpg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Container(
+          color: Colors.black.withOpacity(0.4),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text(
+                    'Our Journey Into the Wild',
                     style: TextStyle(
-                      fontSize: 18,
-                      fontStyle: FontStyle.italic,
-                      color: Color(0xFFD1D5DB),
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                ),
-              ],
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32.0),
+                    child: Text(
+                      '"Bringing the wild to your walls, each shot tells nature\'s untamed story."',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontStyle: FontStyle.italic,
+                        color: Color(0xFFD1D5DB),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -187,6 +213,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     );
   }
 
+  // Photographers section with fade animation
   Widget _buildPhotographersSection() {
     final photographers = [
       {
@@ -227,10 +254,20 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           ),
           const SizedBox(height: 48),
           Column(
-            children: photographers.map((p) {
+            children: photographers.asMap().entries.map((entry) {
+              final index = entry.key;
+              final p = entry.value;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 32),
-                child: _buildPhotographerCard(p),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0, end: 1),
+                  duration: Duration(milliseconds: 500 + index * 100),
+                  builder: (_, value, child) => Opacity(
+                    opacity: value,
+                    child: Transform.translate(offset: Offset(0, 50 * (1 - value)), child: child),
+                  ),
+                  child: _buildPhotographerCard(p),
+                ),
               );
             }).toList(),
           ),
@@ -239,6 +276,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     );
   }
 
+  // Individual photographer card
   Widget _buildPhotographerCard(Map<String, String> p) {
     return Container(
       width: double.infinity,
@@ -292,6 +330,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     );
   }
 
+  // Timeline section
   Widget _buildTimelineSection() {
     final milestones = [
       {'year': '2018 — The Beginning', 'description': 'Born from a passion for wildlife.'},
@@ -334,7 +373,15 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
               children: milestones.asMap().entries.map((entry) {
                 final index = entry.key;
                 final m = entry.value;
-                return _buildTimelineItem(m['year']!, m['description']!, index == milestones.length - 1);
+                return TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0, end: 1),
+                  duration: Duration(milliseconds: 500 + index * 100),
+                  builder: (_, value, child) => Opacity(
+                    opacity: value,
+                    child: Transform.translate(offset: Offset(0, 50 * (1 - value)), child: child),
+                  ),
+                  child: _buildTimelineItem(m['year']!, m['description']!, index == milestones.length - 1),
+                );
               }).toList(),
             ),
           ],
@@ -343,6 +390,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
     );
   }
 
+  // Individual timeline item
   Widget _buildTimelineItem(String year, String description, bool isLast) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),

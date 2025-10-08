@@ -12,7 +12,7 @@ class PurchaseScreen extends StatefulWidget {
   State<PurchaseScreen> createState() => _PurchaseScreenState();
 }
 
-class _PurchaseScreenState extends State<PurchaseScreen> {
+class _PurchaseScreenState extends State<PurchaseScreen> with SingleTickerProviderStateMixin {
   final List<Map<String, dynamic>> _products = [
     {'title': 'Zebras', 'photographer': 'Mc James', 'category': 'Mammals', 'image': 'assets/product1.jpg', 'price': 45000.00, 'size': '12"x18"'},
     {'title': 'Cheetah Family', 'photographer': 'John Smith', 'category': 'Mammals', 'image': 'assets/product2.jpg', 'price': 50000.00, 'size': '12"x18"'},
@@ -38,6 +38,24 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   String _selectedSize = 'All Sizes';
   String _selectedSort = 'Sort By';
 
+  late final AnimationController _controller;
+  late final Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  // Filtered products
   List<Map<String, dynamic>> get _filteredProducts {
     List<Map<String, dynamic>> filtered = List.from(_products);
 
@@ -78,7 +96,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   }
 
   void _navigateToHome() {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
   }
 
   String _formatPrice(double price) {
@@ -94,6 +112,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     );
   }
 
+  // Drawer menu
   Widget _buildDrawer() {
     return Drawer(
       backgroundColor: const Color(0xFF212121),
@@ -150,37 +169,46 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       drawer: _buildDrawer(),
       body: Stack(
         children: [
+          // Background
           Container(
             decoration: const BoxDecoration(image: DecorationImage(image: AssetImage('assets/bgimage.jpg'), fit: BoxFit.cover)),
             child: Container(color: Colors.black.withOpacity(0.8)),
           ),
           SingleChildScrollView(
-            child: Column(children: [_buildHero(), _buildFilters(), _buildProducts()]),
+            child: Column(children: [
+              _buildHero(),
+              _buildFilters(),
+              _buildProducts(),
+            ]),
           ),
         ],
       ),
     );
   }
 
+  // Hero section with fade
   Widget _buildHero() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.5,
-      decoration: const BoxDecoration(image: DecorationImage(image: AssetImage('assets/heroimagepurchase.jpg'), fit: BoxFit.cover)),
+    return FadeTransition(
+      opacity: _fadeAnimation,
       child: Container(
-        color: Colors.black.withOpacity(0.4),
-        child: const Center(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Bring the Wild Home', style: TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1.2), textAlign: TextAlign.center),
-                SizedBox(height: 16),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32),
-                  child: Text('Bringing the wild to your walls, each photograph a nature\'s untamed story.', style: TextStyle(fontSize: 16, color: Color(0xFFD1D5DB)), textAlign: TextAlign.center),
-                ),
-              ],
+        height: MediaQuery.of(context).size.height * 0.5,
+        decoration: const BoxDecoration(image: DecorationImage(image: AssetImage('assets/heroimagepurchase.jpg'), fit: BoxFit.cover)),
+        child: Container(
+          color: Colors.black.withOpacity(0.4),
+          child: const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Bring the Wild Home', style: TextStyle(fontSize: 36, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1.2), textAlign: TextAlign.center),
+                  SizedBox(height: 16),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32),
+                    child: Text('Bringing the wild to your walls, each photograph a nature\'s untamed story.', style: TextStyle(fontSize: 16, color: Color(0xFFD1D5DB)), textAlign: TextAlign.center),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -188,33 +216,37 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     );
   }
 
+  // Filters section with fade
   Widget _buildFilters() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        children: [
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              _filterDropdown(_photographers, _selectedPhotographer, (v) => setState(() => _selectedPhotographer = v!)),
-              _filterDropdown(_categories, _selectedCategory, (v) => setState(() => _selectedCategory = v!)),
-              _filterDropdown(_sizes, _selectedSize, (v) => setState(() => _selectedSize = v!)),
-              _filterDropdown(_sortOptions, _selectedSort, (v) => setState(() => _selectedSort = v!)),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: 180,
-            child: ElevatedButton(
-              onPressed: _clearFilters,
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4B5563), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 10)),
-              child: const Text('Clear Filters'),
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.all(16),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
+        child: Column(
+          children: [
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                _filterDropdown(_photographers, _selectedPhotographer, (v) => setState(() => _selectedPhotographer = v!)),
+                _filterDropdown(_categories, _selectedCategory, (v) => setState(() => _selectedCategory = v!)),
+                _filterDropdown(_sizes, _selectedSize, (v) => setState(() => _selectedSize = v!)),
+                _filterDropdown(_sortOptions, _selectedSort, (v) => setState(() => _selectedSort = v!)),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            SizedBox(
+              width: 180,
+              child: ElevatedButton(
+                onPressed: _clearFilters,
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4B5563), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 10)),
+                child: const Text('Clear Filters'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -233,15 +265,31 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     );
   }
 
+  // Products grid/list
   Widget _buildProducts() {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: _filteredProducts.isEmpty
           ? const Center(child: Text('No products found.', style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 18)))
-          : Column(children: _filteredProducts.map((p) => Padding(padding: const EdgeInsets.only(bottom: 16), child: _productCard(p))).toList()),
+          : Column(
+              children: _filteredProducts.asMap().entries.map((entry) {
+                final index = entry.key;
+                final p = entry.value;
+                return TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0, end: 1),
+                  duration: Duration(milliseconds: 500 + index * 100),
+                  builder: (_, value, child) => Opacity(
+                    opacity: value,
+                    child: Transform.translate(offset: Offset(0, 50 * (1 - value)), child: child),
+                  ),
+                  child: Padding(padding: const EdgeInsets.only(bottom: 16), child: _productCard(p)),
+                );
+              }).toList(),
+            ),
     );
   }
 
+  // Individual product card
   Widget _productCard(Map<String, dynamic> p) {
     return Card(
       color: const Color(0xFF374151),

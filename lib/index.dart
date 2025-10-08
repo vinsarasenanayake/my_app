@@ -11,7 +11,29 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _navigateTo(Widget page) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
   }
@@ -49,38 +71,44 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () => _navigateTo(const LoginScreen())),
         ],
       ),
-      drawer: Drawer(
-        backgroundColor: const Color(0xFF212121),
-        child: ListView(
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: Color(0xFF121212)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _logo(size: 60),
-                  const SizedBox(height: 10),
-                  const Text('Wild TRACE',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold)),
-                ],
+
+      // Drawer with hamburger menu
+      drawer: Tooltip(
+        message: '', 
+        child: Drawer(
+          backgroundColor: const Color(0xFF212121),
+          child: ListView(
+            children: [
+              DrawerHeader(
+                decoration: const BoxDecoration(color: Color(0xFF121212)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _logo(size: 60),
+                    const SizedBox(height: 10),
+                    const Text('Wild TRACE',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ),
-            ),
-            _drawerItem(Icons.home, 'HOME', () => Navigator.pop(context)),
-            _drawerItem(Icons.landscape, 'JOURNEY',
-                () => _navigateTo(const AboutUsScreen())),
-            _drawerItem(Icons.shopping_bag, 'PURCHASE',
-                () => _navigateTo(const PurchaseScreen())),
-            const Divider(color: Color(0xFF4b4b4b)),
-            _drawerItem(Icons.shopping_cart, 'CART',
-                () => _navigateTo(const CartScreen())),
-            _drawerItem(Icons.login, 'LOGIN',
-                () => _navigateTo(const LoginScreen())),
-          ],
+              _drawerItem(Icons.home, 'HOME', () => Navigator.pop(context)),
+              _drawerItem(Icons.landscape, 'JOURNEY',
+                  () => _navigateTo(const AboutUsScreen())),
+              _drawerItem(Icons.shopping_bag, 'PURCHASE',
+                  () => _navigateTo(const PurchaseScreen())),
+              const Divider(color: Color(0xFF4b4b4b)),
+              _drawerItem(Icons.shopping_cart, 'CART',
+                  () => _navigateTo(const CartScreen())),
+              _drawerItem(Icons.login, 'LOGIN',
+                  () => _navigateTo(const LoginScreen())),
+            ],
+          ),
         ),
       ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -93,56 +121,61 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Drawer item widget
   ListTile _drawerItem(IconData icon, String title, VoidCallback onTap) =>
       ListTile(
           leading: Icon(icon, color: Colors.white),
           title: Text(title, style: const TextStyle(color: Colors.white)),
           onTap: onTap);
 
-  Widget _heroSection() => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage('assets/heroimagehome.jpg'), fit: BoxFit.cover),
-        ),
+  // Hero section with fade animation
+  Widget _heroSection() => FadeTransition(
+        opacity: _fadeAnimation,
         child: Container(
-          color: Colors.black.withOpacity(0.4),
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Welcome to',
-                      style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white)),
-                  const SizedBox(height: 20),
-                  _logo(size: 128),
-                  const SizedBox(height: 20),
-                  const Text('Freeze the Wild, Forever.',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontStyle: FontStyle.italic,
-                          color: Color(0xFFE5E5E5))),
-                  const SizedBox(height: 16),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(
-                      "Bringing the wild to your walls — each photograph tells nature's story.",
-                      style:
-                          TextStyle(fontSize: 16, color: Color(0xFFE5E5E5)),
-                      textAlign: TextAlign.center,
+          height: MediaQuery.of(context).size.height * 0.8,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/heroimagehome.jpg'), fit: BoxFit.cover),
+          ),
+          child: Container(
+            color: Colors.black.withOpacity(0.4),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Welcome to',
+                        style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white)),
+                    const SizedBox(height: 20),
+                    _logo(size: 128),
+                    const SizedBox(height: 20),
+                    const Text('Freeze the Wild, Forever.',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontStyle: FontStyle.italic,
+                            color: Color(0xFFE5E5E5))),
+                    const SizedBox(height: 16),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 32),
+                      child: Text(
+                        "Bringing the wild to your walls — each photograph tells nature's story.",
+                        style: TextStyle(fontSize: 16, color: Color(0xFFE5E5E5)),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
       );
 
+  // Testimonials section with slide animation
   Widget _testimonialsSection() {
     final testimonials = [
       {
@@ -180,7 +213,16 @@ class _HomeScreenState extends State<HomeScreen> {
               final list = testimonials
                   .map((t) => Padding(
                         padding: EdgeInsets.only(bottom: isWide ? 0 : 16),
-                        child: _testimonialCard(t),
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0, end: 1),
+                          duration: const Duration(milliseconds: 600),
+                          builder: (_, value, child) => Opacity(
+                            opacity: value,
+                            child: Transform.translate(
+                                offset: Offset(0, 50 * (1 - value)), child: child),
+                          ),
+                          child: _testimonialCard(t),
+                        ),
                       ))
                   .toList();
               return isWide
@@ -195,6 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Individual testimonial card
   Widget _testimonialCard(Map<String, String> t) => Container(
         width: 280,
         padding: const EdgeInsets.all(24),
@@ -229,6 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
 
+  // Newsletter section
   Widget _newsletterSection() => Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 16),

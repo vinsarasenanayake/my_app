@@ -19,15 +19,40 @@ class ProductDetailsScreen extends StatefulWidget {
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
 }
 
-class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> with SingleTickerProviderStateMixin {
   int _quantity = 1;
+  late final AnimationController _controller;
+  late final Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   String _formatPrice(double price) {
-    return 'LKR ${price.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}';
+    return 'LKR ${price.toStringAsFixed(0).replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (m) => "${m[1]},")}';
   }
 
   void _navigateToHome() {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+  }
+
+  // Drawer item
+  Widget _drawerItem(IconData icon, String title, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(title, style: const TextStyle(color: Colors.white)),
+      onTap: onTap,
+    );
   }
 
   @override
@@ -78,13 +103,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       ),
       body: Stack(
         children: [
+          // Background
           Container(decoration: const BoxDecoration(image: DecorationImage(image: AssetImage('assets/bgimage.jpg'), fit: BoxFit.cover)), child: Container(color: Colors.black.withOpacity(0.8))),
           SingleChildScrollView(
             child: Column(
               children: [
-                _productSection(context),
-                _photographerSection(),
-                _otherProductsSection(context),
+                // Product section
+                FadeTransition(opacity: _fadeAnimation, child: _productSection(context)),
+                // Photographer section
+                FadeTransition(opacity: _fadeAnimation, child: _photographerSection()),
+                // Other products
+                FadeTransition(opacity: _fadeAnimation, child: _otherProductsSection(context)),
               ],
             ),
           ),
@@ -93,10 +122,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _drawerItem(IconData icon, String title, VoidCallback onTap) {
-    return ListTile(leading: Icon(icon, color: Colors.white), title: Text(title, style: const TextStyle(color: Colors.white)), onTap: onTap);
-  }
-
+  // ---------------- Product Section ----------------
   Widget _productSection(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -109,7 +135,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), image: DecorationImage(image: AssetImage(widget.product['image']), fit: BoxFit.cover)),
           );
           Widget info = _productInfo();
-          return constraints.maxWidth > 768 ? Row(children: [Expanded(child: image), const SizedBox(width: 32), Expanded(child: info)]) : Column(children: [image, const SizedBox(height: 24), info]);
+          return constraints.maxWidth > 768
+              ? Row(children: [Expanded(child: image), const SizedBox(width: 32), Expanded(child: info)])
+              : Column(children: [image, const SizedBox(height: 24), info]);
         },
       ),
     );
@@ -159,6 +187,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
+  // ---------------- Photographer Section ----------------
   Widget _photographerSection() {
     final photog = widget.product['photographer'];
     Map<String, String> images = {'Aarzoo Khurana':'assets/teammember3.jpg','Mc James':'assets/teammember1.jpg','John Smith':'assets/teammember2.jpg','Thomas Vijayan':'assets/teammember4.jpg'};
@@ -195,6 +224,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
+  // ---------------- Other Products Section ----------------
   Widget _otherProductsSection(BuildContext context) {
     List<Map<String, dynamic>> products = widget.otherProducts;
     if (products.length < 4) products = [...products, ...products.take(4 - products.length)];

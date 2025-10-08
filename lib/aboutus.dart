@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'index.dart'; // This should contain HomeScreen
+import 'index.dart';
 import 'login.dart';
 import 'cart.dart';
 import 'purchase.dart';
@@ -19,6 +19,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: GestureDetector(
           onTap: _navigateToHome,
           child: Image.asset(
@@ -33,19 +34,13 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           IconButton(
             icon: const Icon(Icons.shopping_cart, color: Colors.white),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CartScreen()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const CartScreen()));
             },
           ),
           IconButton(
             icon: const Icon(Icons.person, color: Colors.white),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
             },
           ),
         ],
@@ -54,13 +49,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Hero Section
             _buildHeroSection(),
-
-            // Meet the Photographers Section
             _buildPhotographersSection(),
-
-            // Timeline Section
             _buildTimelineSection(),
           ],
         ),
@@ -69,10 +59,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
   }
 
   void _navigateToHome() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
-    );
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
   }
 
   Widget _buildPlaceholderLogo() {
@@ -94,9 +81,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(
-              color: Color(0xFF121212),
-            ),
+            decoration: const BoxDecoration(color: Color(0xFF121212)),
             child: GestureDetector(
               onTap: _navigateToHome,
               child: Column(
@@ -123,36 +108,23 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           ),
           _buildDrawerItem(Icons.home, 'HOME', () {
             Navigator.pop(context);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
           }),
           _buildDrawerItem(Icons.landscape, 'JOURNEY', () {
             Navigator.pop(context);
-            // Already on Journey screen, just close drawer
           }),
           _buildDrawerItem(Icons.shopping_bag, 'PURCHASE', () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const PurchaseScreen()),
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const PurchaseScreen()));
           }),
           const Divider(color: Color(0xFF4b4b4b)),
           _buildDrawerItem(Icons.shopping_cart, 'CART', () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CartScreen()),
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const CartScreen()));
           }),
           _buildDrawerItem(Icons.login, 'LOGIN', () {
             Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-            );
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
           }),
         ],
       ),
@@ -162,10 +134,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
   Widget _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       leading: Icon(icon, color: Colors.white),
-      title: Text(
-        title,
-        style: const TextStyle(color: Colors.white),
-      ),
+      title: Text(title, style: const TextStyle(color: Colors.white)),
       onTap: onTap,
     );
   }
@@ -186,8 +155,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
+              children: const [
+                Text(
                   'Our Journey Into the Wild',
                   style: TextStyle(
                     fontSize: 36,
@@ -197,8 +166,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
-                const Padding(
+                SizedBox(height: 20),
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 32.0),
                   child: Text(
                     '"Bringing the wild to your walls, each shot tells nature\'s untamed story."',
@@ -223,22 +192,22 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       {
         'image': 'assets/teammember1.jpg',
         'name': 'Mc James',
-        'quote': 'Wildlife photographer specializing in capturing intimate moments of big cats in their natural habitats.',
+        'quote': 'Wildlife photographer capturing intimate moments of big cats.',
       },
       {
         'image': 'assets/teammember2.jpg',
         'name': 'John Smith',
-        'quote': 'Award-winning bird photographer with a focus on endangered avian species conservation.',
+        'quote': 'Award-winning bird photographer focusing on endangered species.',
       },
       {
         'image': 'assets/teammember3.jpg',
         'name': 'Aarzoo Khurana',
-        'quote': 'Underwater photography expert documenting marine life and coral reef ecosystems.',
+        'quote': 'Underwater photography expert documenting marine life.',
       },
       {
         'image': 'assets/teammember4.jpg',
         'name': 'Thomas Vijayan',
-        'quote': 'Wildlife conservation photographer telling stories of human-animal coexistence through powerful imagery.',
+        'quote': 'Photographer telling stories of human-animal coexistence.',
       },
     ];
 
@@ -258,19 +227,19 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           ),
           const SizedBox(height: 48),
           Column(
-            children: photographers.map((photographer) => 
-              Padding(
+            children: photographers.map((p) {
+              return Padding(
                 padding: const EdgeInsets.only(bottom: 32),
-                child: _buildPhotographerCard(photographer),
-              )
-            ).toList(),
+                child: _buildPhotographerCard(p),
+              );
+            }).toList(),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPhotographerCard(Map<String, String> photographer) {
+  Widget _buildPhotographerCard(Map<String, String> p) {
     return Container(
       width: double.infinity,
       constraints: const BoxConstraints(maxWidth: 600),
@@ -291,14 +260,14 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           CircleAvatar(
             radius: 48,
             backgroundColor: const Color(0xFF9CA3AF),
-            backgroundImage: AssetImage(photographer['image']!),
-            child: photographer['image']!.isEmpty 
+            backgroundImage: AssetImage(p['image']!),
+            child: p['image']!.isEmpty
                 ? const Icon(Icons.person, size: 30, color: Colors.white)
                 : null,
           ),
           const SizedBox(height: 16),
           Text(
-            photographer['name']!,
+            p['name']!,
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
@@ -308,18 +277,12 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
           const SizedBox(height: 4),
           const Text(
             'Wildlife Photographer',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xFF9CA3AF),
-            ),
+            style: TextStyle(fontSize: 14, color: Color(0xFF9CA3AF)),
           ),
           const SizedBox(height: 12),
           Text(
-            photographer['quote']!,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFFD1D5DB),
-            ),
+            p['quote']!,
+            style: const TextStyle(fontSize: 14, color: Color(0xFFD1D5DB)),
             textAlign: TextAlign.center,
             maxLines: 4,
             overflow: TextOverflow.ellipsis,
@@ -331,26 +294,11 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
 
   Widget _buildTimelineSection() {
     final milestones = [
-      {
-        'year': '2018 — The Beginning',
-        'description': 'Born from a passion for wildlife and photography.',
-      },
-      {
-        'year': '2019 — First Collection Launch',
-        'description': 'Released our debut gallery of wild moments.',
-      },
-      {
-        'year': '2021 — Growing Global Connections',
-        'description': 'Partnered with photographers worldwide.',
-      },
-      {
-        'year': '2023 — Online Store Opens',
-        'description': 'Started selling exclusive prints and downloads.',
-      },
-      {
-        'year': '2025 — Conservation & Community',
-        'description': 'Supporting wildlife preservation through art.',
-      },
+      {'year': '2018 — The Beginning', 'description': 'Born from a passion for wildlife.'},
+      {'year': '2019 — First Collection Launch', 'description': 'Released our debut gallery.'},
+      {'year': '2021 — Global Connections', 'description': 'Partnered with photographers worldwide.'},
+      {'year': '2023 — Online Store Opens', 'description': 'Started selling exclusive prints.'},
+      {'year': '2025 — Conservation & Community', 'description': 'Supporting wildlife preservation.'},
     ];
 
     return Container(
@@ -364,7 +312,6 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         color: Colors.black.withOpacity(0.4),
       ),
       child: Container(
-        width: double.infinity,
         constraints: const BoxConstraints(maxWidth: 500),
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
@@ -386,12 +333,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             Column(
               children: milestones.asMap().entries.map((entry) {
                 final index = entry.key;
-                final milestone = entry.value;
-                return _buildTimelineItem(
-                  milestone['year']!,
-                  milestone['description']!,
-                  index == milestones.length - 1,
-                );
+                final m = entry.value;
+                return _buildTimelineItem(m['year']!, m['description']!, index == milestones.length - 1);
               }).toList(),
             ),
           ],
@@ -406,17 +349,15 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Timeline dot
           Container(
             width: 16,
             height: 16,
             margin: const EdgeInsets.only(top: 4, right: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF9CA3AF),
+            decoration: const BoxDecoration(
+              color: Color(0xFF9CA3AF),
               shape: BoxShape.circle,
             ),
           ),
-          // Timeline content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,10 +373,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   description,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                  ),
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
                 if (!isLast) const SizedBox(height: 16),
               ],
